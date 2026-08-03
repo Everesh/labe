@@ -11,7 +11,7 @@ import (
 	"syscall"
 
 	"charm.land/log/v2"
-	"codeberg.org/everesh/labe/internal/proto"
+	"codeberg.org/everesh/labe/internal/wm"
 	"hazelnut.eclair.cafe/wlcl"
 )
 
@@ -38,16 +38,12 @@ func run(ctx context.Context) error {
 		}
 	}()
 
-	// as per the tinywm example,
-	// dont pass WAYLAND_DEBUG onto children when creating a display to prevent log pollution
-	_ = os.Unsetenv("WAYLAND_DEBUG")
-
-	display := proto.CreateDisplay(conn)
-	if err := wlcl.Roundtrip(ctx, display); err != nil {
-		return fmt.Errorf("wlcl roundtrip failed: %w", err)
+	wm, err := wm.New(ctx, conn)
+	if err != nil {
+		return fmt.Errorf("failed to initialize the window manager: %w", err)
 	}
 
-	for true {
+	for !wm.Done {
 		if err := conn.Dispatch(ctx); err != nil {
 			if errors.Is(err, context.Canceled) {
 				return nil
@@ -55,6 +51,11 @@ func run(ctx context.Context) error {
 			return fmt.Errorf("dispatch failed: %w", err)
 		}
 	}
+
+	if wm.Err != nil {
+		return fmt.Errorf("window manager exited due to an error: %w", err)
+	}
+
 	return nil
 }
 
