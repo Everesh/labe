@@ -6,7 +6,7 @@ import (
 	"charm.land/log/v2"
 )
 
-func (wm *WindowManager) HandlerRiverWindowManagerV1RenderStart(ctx context.Context) {
+func (wm *WindowManager) HandleRiverWindowManagerV1RenderStart(ctx context.Context) {
 
 	// TODO
 	log.Info("render")

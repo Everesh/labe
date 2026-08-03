@@ -37,5 +37,6 @@ func NewWindow(object proto.RiverWindowV1) *Window {
 		New:    true,
 	}
 
+	object.SetUserData(window)
 	return window
 }
