@@ -17,6 +17,7 @@ import (
 
 func main() {
 	log.SetLevel(getLogLevel())
+	log.Info("starting labe", "logLevel", log.GetLevel())
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
@@ -38,12 +39,12 @@ func run(ctx context.Context) error {
 		}
 	}()
 
-	wm, err := wm.New(ctx, conn)
+	windowManager, err := wm.New(ctx, conn)
 	if err != nil {
 		return fmt.Errorf("failed to initialize the window manager: %w", err)
 	}
 
-	for !wm.Done {
+	for !windowManager.Done {
 		if err := conn.Dispatch(ctx); err != nil {
 			if errors.Is(err, context.Canceled) {
 				return nil
@@ -52,7 +53,7 @@ func run(ctx context.Context) error {
 		}
 	}
 
-	if wm.Err != nil {
+	if windowManager.Err != nil {
 		return fmt.Errorf("window manager exited due to an error: %w", err)
 	}
 

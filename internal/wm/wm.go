@@ -11,8 +11,11 @@ import (
 
 type WindowManager struct {
 	proto.WlRegistryStub
+	proto.RiverWindowManagerV1Stub
 
-	Registry proto.WlRegistry
+	Registry        proto.WlRegistry
+	WindowManagerV1 proto.RiverWindowManagerV1
+	XkbBindingsV1   proto.RiverXkbBindingsV1
 
 	Done bool
 	Err  error
@@ -31,5 +34,13 @@ func New(ctx context.Context, conn *wlcl.Connection) (*WindowManager, error) {
 	if err := wlcl.Roundtrip(ctx, display); err != nil {
 		return nil, fmt.Errorf("wlcl roundtrip failed: %w", err)
 	}
+
+	if !wm.Registry.IsSet() ||
+		!wm.WindowManagerV1.IsSet() ||
+		!wm.XkbBindingsV1.IsSet() {
+		return nil, fmt.Errorf("failed to register all globals")
+	}
+
+	wm.WindowManagerV1.SetUserData(wm)
 	return wm, nil
 }
