@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"codeberg.org/everesh/labe/internal/output"
 	"codeberg.org/everesh/labe/internal/proto"
 	"codeberg.org/everesh/labe/internal/seat"
 	"codeberg.org/everesh/labe/internal/window"
@@ -25,6 +26,7 @@ type WindowManager struct {
 	// TODO - TEMPORARY FIELDS
 	Windows []*window.Window
 	Seats   []*seat.Seat
+	Outputs []*output.Output
 }
 
 func New(ctx context.Context, conn *wlcl.Connection) (*WindowManager, error) {
