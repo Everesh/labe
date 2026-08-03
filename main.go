@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"os/exec"
 	"os/signal"
 	"strings"
 	"syscall"
@@ -44,6 +45,12 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("failed to initialize the window manager: %w", err)
 	}
 
+	// TODO - DROP THE ABOMINATION BELLOW
+	//      - ONLY USED TO POPULATE THE NESTED SESSION FOR NOW
+	cmd := exec.Command("alacritty")
+	cmd.Start()
+	go func() { _, _ = cmd.Process.Wait() }()
+
 	for !windowManager.Done {
 		if err := conn.Dispatch(ctx); err != nil {
 			if errors.Is(err, context.Canceled) {
@@ -53,7 +60,7 @@ func run(ctx context.Context) error {
 		}
 	}
 
-	if windowManager.Err != nil {
+	if err := windowManager.Err; err != nil {
 		return fmt.Errorf("window manager exited due to an error: %w", err)
 	}
 
@@ -76,7 +83,7 @@ func getLogLevel() log.Level {
 		case "NONE":
 			return log.Level(math.MaxInt)
 		default:
-			log.Warn("unknown log level, defaulting to Info")
+			log.Warn("unknown log level, defaulting to info", "value", level)
 			return log.InfoLevel
 		}
 	}
