@@ -6,6 +6,8 @@ cmd = "go build -o ./air_tmp/labe ."
 full_bin = "WAYLAND_DISPLAY=wayland-2 ./air_tmp/labe"
 include_ext = ["go"]
 exclude_dir = ["air_tmp"]
+send_interrupt = true
+kill_delay = "500ms"
 
 [misc]
 clean_on_exit = true

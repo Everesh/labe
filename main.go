@@ -24,6 +24,7 @@ func main() {
 	if err := run(ctx); err != nil {
 		log.Fatal(err)
 	}
+	log.Info("graceful shutdown")
 }
 
 func run(ctx context.Context) error {
@@ -49,7 +50,6 @@ func run(ctx context.Context) error {
 	for true {
 		if err := conn.Dispatch(ctx); err != nil {
 			if errors.Is(err, context.Canceled) {
-				log.Info("graceful shutdown: context canceled")
 				return nil
 			}
 			return fmt.Errorf("dispatch failed: %w", err)
