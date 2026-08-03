@@ -5,6 +5,7 @@ import (
 
 	"charm.land/log/v2"
 	"codeberg.org/everesh/labe/internal/proto"
+	"codeberg.org/everesh/labe/internal/window"
 )
 
 func (wm *WindowManager) HandleWlRegistryGlobal(ctx context.Context, name uint32, iface string, version uint32) {
@@ -21,18 +22,6 @@ func (wm *WindowManager) HandleWlRegistryGlobal(ctx context.Context, name uint32
 	}
 }
 
-func (wm *WindowManager) HandlerRiverWindowManagerV1RenderStart(ctx context.Context) {
-
-	// TODO
-	log.Info("render")
-
-	wm.WindowManagerV1.RenderFinish()
-}
-
-func (wm *WindowManager) HandleRiverWindowManagerV1ManageStart(ctx context.Context) {
-
-	// TODO
-	log.Info("manage")
-
-	wm.WindowManagerV1.ManageFinish()
+func (wm *WindowManager) HandleRiverWindowManagerV1Window(ctx context.Context, id proto.RiverWindowV1) {
+	wm.Windows = append(wm.Windows, window.NewWindow(id))
 }
