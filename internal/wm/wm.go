@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"codeberg.org/everesh/labe/internal/proto"
+	"codeberg.org/everesh/labe/internal/seat"
 	"codeberg.org/everesh/labe/internal/window"
 	"hazelnut.eclair.cafe/wlcl"
 )
@@ -23,6 +24,7 @@ type WindowManager struct {
 
 	// TODO - TEMPORARY FIELDS
 	Windows []*window.Window
+	Seats   []*seat.Seat
 }
 
 func New(ctx context.Context, conn *wlcl.Connection) (*WindowManager, error) {
