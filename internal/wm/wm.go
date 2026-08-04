@@ -19,6 +19,7 @@ type WindowManager struct {
 	Registry        proto.WlRegistry
 	WindowManagerV1 proto.RiverWindowManagerV1
 	XkbBindingsV1   proto.RiverXkbBindingsV1
+	LayerShellV1    proto.RiverLayerShellV1
 
 	Done bool
 	Err  error

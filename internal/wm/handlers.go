@@ -21,6 +21,8 @@ func (wm *WindowManager) HandleWlRegistryGlobal(ctx context.Context, name uint32
 		}
 	case proto.RiverXkbBindingsV1Name:
 		wm.XkbBindingsV1 = proto.As[proto.RiverXkbBindingsV1](wm.Registry.Bind(name, iface, 1))
+	case proto.RiverLayerShellV1Name:
+		wm.LayerShellV1 = proto.As[proto.RiverLayerShellV1](wm.Registry.Bind(name, iface, 1))
 	}
 }
 
