@@ -1,12 +1,23 @@
 package seat
 
-import "codeberg.org/everesh/labe/internal/proto"
+import (
+	"codeberg.org/everesh/labe/internal/proto"
+	"codeberg.org/everesh/labe/internal/window"
+)
 
 type Seat struct {
 	proto.RiverSeatV1Stub
 
 	Object proto.RiverSeatV1
 
+	// Pointer
+	Focused    *window.Window
+	Hovered    *window.Window
+	Interacted *window.Window
+	X          int32
+	Y          int32
+
+	// Life cycle
 	New     bool
 	Removed bool
 }

@@ -7,6 +7,6 @@ import (
 )
 
 func (w *Window) HandleRiverWindowV1Closed(ctx context.Context) {
-	log.Info("window closed", "id", w.Object)
+	log.Info("window closed", "window", w.Object)
 	w.Closed = true
 }

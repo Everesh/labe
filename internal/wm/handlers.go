@@ -25,16 +25,16 @@ func (wm *WindowManager) HandleWlRegistryGlobal(ctx context.Context, name uint32
 }
 
 func (wm *WindowManager) HandleRiverWindowManagerV1Window(ctx context.Context, id proto.RiverWindowV1) {
-	log.Info("window added", "id", id)
+	log.Info("window added", "window", id)
 	wm.Windows = append(wm.Windows, window.NewWindow(id))
 }
 
 func (wm *WindowManager) HandleRiverWindowManagerV1Seat(ctx context.Context, id proto.RiverSeatV1) {
-	log.Info("seat added", "id", id)
+	log.Info("seat added", "seat", id)
 	wm.Seats = append(wm.Seats, seat.NewSeat(id))
 }
 
 func (wm *WindowManager) HandleRiverWindowManagerV1Output(ctx context.Context, id proto.RiverOutputV1) {
-	log.Info("output added", "id", id)
+	log.Info("output added", "output", id)
 	wm.Outputs = append(wm.Outputs, output.NewOutput(id))
 }

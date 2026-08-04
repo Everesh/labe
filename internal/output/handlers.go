@@ -7,6 +7,6 @@ import (
 )
 
 func (o *Output) HandleRiverOutputV1Removed(ctx context.Context) {
-	log.Info("output removed", "id", o.Object)
+	log.Info("output removed", "output", o.Object)
 	o.Removed = true
 }
