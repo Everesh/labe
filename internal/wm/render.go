@@ -6,7 +6,9 @@ import (
 
 func (wm *WindowManager) HandleRiverWindowManagerV1RenderStart(ctx context.Context) {
 
-	// TODO
+	for _, s := range wm.Seats {
+		s.Render()
+	}
 
 	wm.WindowManagerV1.RenderFinish()
 }

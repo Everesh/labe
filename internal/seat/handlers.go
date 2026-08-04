@@ -32,3 +32,12 @@ func (s *Seat) HandleRiverSeatV1PointerPosition(ctx context.Context, x int32, y 
 	s.X = x
 	s.Y = y
 }
+
+func (s *Seat) HandleRiverSeatV1OpDelta(ctx context.Context, dx int32, dy int32) {
+	s.OpState.Dx, s.OpState.Dy = dx, dy
+}
+
+func (s *Seat) HandleRiverSeatV1OpRelease(ctx context.Context) {
+	log.Debug("operation released", "seat", s.Object)
+	s.OpReleased = true
+}

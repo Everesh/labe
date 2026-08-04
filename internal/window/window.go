@@ -1,6 +1,8 @@
 package window
 
-import "codeberg.org/everesh/labe/internal/proto"
+import (
+	"codeberg.org/everesh/labe/internal/proto"
+)
 
 type Window struct {
 	proto.RiverWindowV1Stub
@@ -8,8 +10,25 @@ type Window struct {
 	Object proto.RiverWindowV1
 	Node   proto.RiverNodeV1
 
+	X, Y          int32
+	Width, Height int32
+
+	PointerMoveRequested        PointerRequester
+	PointerResizeRequested      PointerRequester
+	PointerResizeRequestedEdges uint32
+
 	New    bool
 	Closed bool
+}
+
+type PointerRequester interface {
+	PointerMove(w *Window)
+	PointerResize(w *Window, edges uint32)
+}
+
+func (w *Window) SetPosition(x, y int32) {
+	w.Node.SetPosition(x, y)
+	w.X, w.Y = x, y
 }
 
 func (w *Window) Manage() {
@@ -17,6 +36,16 @@ func (w *Window) Manage() {
 		w.New = false
 		w.Node.SetPosition(0, 0)
 		w.Object.ProposeDimensions(0, 0)
+	}
+
+	if w.PointerMoveRequested != nil {
+		w.PointerMoveRequested.PointerMove(w)
+		w.PointerMoveRequested = nil
+	}
+
+	if w.PointerResizeRequested != nil {
+		w.PointerResizeRequested.PointerResize(w, w.PointerResizeRequestedEdges)
+		w.PointerResizeRequested = nil
 	}
 }
 
