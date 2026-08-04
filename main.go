@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"math"
 	"os"
-	"os/exec"
 	"os/signal"
 	"strings"
 	"syscall"
 
 	"charm.land/log/v2"
 	"codeberg.org/everesh/labe/internal/wm"
+	"codeberg.org/everesh/labe/internal/xkb"
 	"hazelnut.eclair.cafe/wlcl"
 )
 
@@ -45,11 +45,7 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("failed to initialize the window manager: %w", err)
 	}
 
-	// TODO - DROP THE ABOMINATION BELLOW
-	//      - ONLY USED TO POPULATE THE NESTED SESSION FOR NOW
-	cmd := exec.Command("alacritty")
-	cmd.Start()
-	go func() { _, _ = cmd.Process.Wait() }()
+	xkb.StartupHooks()
 
 	for !windowManager.Done {
 		if err := conn.Dispatch(ctx); err != nil {

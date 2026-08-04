@@ -13,17 +13,12 @@ type Window struct {
 	X, Y          int32
 	Width, Height int32
 
-	PointerMoveRequested        PointerRequester
-	PointerResizeRequested      PointerRequester
+	PointerMoveRequested        Seat
+	PointerResizeRequested      Seat
 	PointerResizeRequestedEdges uint32
 
 	New    bool
 	Closed bool
-}
-
-type PointerRequester interface {
-	PointerMove(w *Window)
-	PointerResize(w *Window, edges uint32)
 }
 
 func (w *Window) SetPosition(x, y int32) {

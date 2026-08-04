@@ -3,17 +3,23 @@ package seat
 import (
 	"codeberg.org/everesh/labe/internal/proto"
 	"codeberg.org/everesh/labe/internal/window"
+	"codeberg.org/everesh/labe/internal/xkb"
 )
 
 type Seat struct {
 	proto.RiverSeatV1Stub
 
-	Object proto.RiverSeatV1
+	Object          proto.RiverSeatV1
+	WM              WindowManager
+	Bindings        []*xkb.Binding
+	PointerBindings []*xkb.PointerBinding
 
 	Focused    *window.Window
 	Hovered    *window.Window
 	Interacted *window.Window
 	X, Y       int32
+
+	PendingAction func()
 
 	Op         Op
 	OpState    OpState
@@ -26,6 +32,12 @@ type Seat struct {
 func (s *Seat) Manage() {
 	if s.New {
 		s.New = false
+		for _, b := range s.Bindings {
+			b.Object.Enable()
+		}
+		for _, b := range s.PointerBindings {
+			b.Object.Enable()
+		}
 	}
 
 	if w := s.Focused; w != nil && w.Closed {
@@ -34,6 +46,11 @@ func (s *Seat) Manage() {
 
 	s.Focus(s.Interacted)
 	s.Interacted = nil
+
+	if s.PendingAction != nil {
+		s.PendingAction()
+		s.PendingAction = nil
+	}
 
 	if op := s.Op; op != nil {
 		switch {
@@ -72,6 +89,10 @@ func (s *Seat) StartOp(w *window.Window, op Op) {
 	op.InformStart(w)
 }
 
+func (s *Seat) ExitSession() {
+	s.WM.GetWindowManagerV1().ExitSession()
+}
+
 func (s *Seat) PointerMove(w *window.Window) {
 	s.StartOp(w, NewOpMove(w))
 }
@@ -106,11 +127,14 @@ func (s *Seat) MaybeDestroy() bool {
 	return true
 }
 
-func NewSeat(object proto.RiverSeatV1) *Seat {
+func NewSeat(object proto.RiverSeatV1, wm WindowManager) *Seat {
 	seat := &Seat{
 		Object: object,
+		WM:     wm,
 		New:    true,
 	}
+
+	seat.Bindings, seat.PointerBindings = xkb.ConfigureBindings(seat)
 
 	seat.Object.SetUserData(seat)
 	return seat

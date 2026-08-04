@@ -18,11 +18,11 @@ func (w *Window) HandleRiverWindowV1Dimensions(ctx context.Context, width int32,
 
 func (w *Window) HandleRiverWindowV1PointerMoveRequested(ctx context.Context, s proto.RiverSeatV1) {
 	log.Debug("operation requested, window move", "window", w.Object, "seat", s)
-	w.PointerMoveRequested = s.UserData().(PointerRequester)
+	w.PointerMoveRequested = s.UserData().(Seat)
 }
 
 func (w *Window) HandleRiverWindowV1PointerResizeRequested(ctx context.Context, s proto.RiverSeatV1, edges uint32) {
 	log.Debug("operation requested, window resize", "window", w.Object, "seat", s)
-	w.PointerResizeRequested = s.UserData().(PointerRequester)
+	w.PointerResizeRequested = s.UserData().(Seat)
 	w.PointerResizeRequestedEdges = edges
 }

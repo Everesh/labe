@@ -31,7 +31,7 @@ func (wm *WindowManager) HandleRiverWindowManagerV1Window(ctx context.Context, i
 
 func (wm *WindowManager) HandleRiverWindowManagerV1Seat(ctx context.Context, id proto.RiverSeatV1) {
 	log.Info("seat added", "seat", id)
-	wm.Seats = append(wm.Seats, seat.NewSeat(id))
+	wm.Seats = append(wm.Seats, seat.NewSeat(id, wm))
 }
 
 func (wm *WindowManager) HandleRiverWindowManagerV1Output(ctx context.Context, id proto.RiverOutputV1) {
