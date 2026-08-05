@@ -26,3 +26,9 @@ func (w *Window) HandleRiverWindowV1PointerResizeRequested(ctx context.Context, 
 	w.PointerResizeRequested = s.UserData().(Seat)
 	w.PointerResizeRequestedEdges = edges
 }
+
+func (w *Window) HandleRiverWindowV1DecorationHint(ctx context.Context, hint uint32) {
+	log.Debug("decorations hinted", "window", w.Object, "hint", hint)
+	w.DecorationHinted = true
+	w.DecorationHint = hint
+}

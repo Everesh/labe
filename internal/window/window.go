@@ -1,6 +1,7 @@
 package window
 
 import (
+	"charm.land/log/v2"
 	"codeberg.org/everesh/labe/internal/proto"
 )
 
@@ -17,8 +18,11 @@ type Window struct {
 	PointerResizeRequested      Seat
 	PointerResizeRequestedEdges uint32
 
-	New    bool
-	Closed bool
+	DecorationHint uint32
+
+	New              bool
+	Closed           bool
+	DecorationHinted bool
 }
 
 func (w *Window) SetPosition(x, y int32) {
@@ -31,6 +35,22 @@ func (w *Window) Manage() {
 		w.New = false
 		w.Node.SetPosition(0, 0)
 		w.Object.ProposeDimensions(0, 0)
+	}
+
+	if w.DecorationHinted {
+		w.DecorationHinted = false
+		switch w.DecorationHint {
+		case 0b00: // only csd supported
+			fallthrough
+		case 0b01: // prefered csd
+			w.Object.UseCsd()
+		case 0b10: // prefered ssd
+			fallthrough
+		case 0b11: // only ssd supported
+			w.Object.UseSsd()
+		default:
+			log.Error("invalid decoration hint recieved", "want", "0-3", "got", w.DecorationHint)
+		}
 	}
 
 	if w.PointerMoveRequested != nil {
