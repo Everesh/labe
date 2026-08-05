@@ -10,9 +10,12 @@ type Window struct {
 
 	Object proto.RiverWindowV1
 	Node   proto.RiverNodeV1
+	WM     WindowManager
 
-	X, Y          int32
-	Width, Height int32
+	X, Y                int32
+	Width, Height       int32
+	MaxWidth, MaxHeight int32
+	MinWidth, MinHeight int32
 
 	PointerMoveRequested        Seat
 	PointerResizeRequested      Seat
@@ -21,6 +24,7 @@ type Window struct {
 	DecorationHint uint32
 
 	New              bool
+	PendingPosition  bool
 	Closed           bool
 	DecorationHinted bool
 }
@@ -32,12 +36,14 @@ func (w *Window) SetPosition(x, y int32) {
 
 func (w *Window) Manage() {
 	if w.New {
+		log.Debug("managing new window", "window", w.Object)
+
 		w.New = false
-		w.Node.SetPosition(0, 0)
 		w.Object.ProposeDimensions(0, 0)
 	}
 
 	if w.DecorationHinted {
+		log.Debug("adjusting decorations", "window", w.Object)
 		w.DecorationHinted = false
 		switch w.DecorationHint {
 		case 0b00: // only csd supported
@@ -64,6 +70,40 @@ func (w *Window) Manage() {
 	}
 }
 
+func (w *Window) Render() {
+	if w.PendingPosition {
+		log.Debug("adjusting postition", "window", w.Object)
+		w.PendingPosition = false
+
+		var o Output
+		if s := w.WM.GetLastActiveSeat(); s != nil {
+			o = w.WM.OutputAt(s.GetX(), s.GetY())
+		} else {
+			o = w.WM.GetDefaultOutput()
+		}
+
+		if o != nil {
+			oHeight := o.GetHeight()
+			oWidth := o.GetWidth()
+
+			if w.Height > oHeight {
+				w.Height = oHeight
+			}
+
+			if w.Width > oWidth {
+				w.Width = oWidth
+			}
+
+			w.X = o.GetX() + ((oWidth - w.Width) / 2)
+			w.Y = o.GetY() + ((oHeight - w.Height) / 2)
+		} else {
+			log.Error("window render loop could not find any outputs")
+		}
+
+		w.SetPosition(w.X, w.Y)
+	}
+}
+
 func (w *Window) MaybeDestroy() bool {
 	if !w.Closed {
 		return false
@@ -74,11 +114,13 @@ func (w *Window) MaybeDestroy() bool {
 	return true
 }
 
-func NewWindow(object proto.RiverWindowV1) *Window {
+func NewWindow(object proto.RiverWindowV1, wm WindowManager) *Window {
 	window := &Window{
-		Object: object,
-		Node:   object.GetNode(),
-		New:    true,
+		Object:          object,
+		Node:            object.GetNode(),
+		WM:              wm,
+		New:             true,
+		PendingPosition: true,
 	}
 
 	object.SetUserData(window)

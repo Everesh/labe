@@ -28,7 +28,7 @@ func (wm *WindowManager) HandleWlRegistryGlobal(ctx context.Context, name uint32
 
 func (wm *WindowManager) HandleRiverWindowManagerV1Window(ctx context.Context, id proto.RiverWindowV1) {
 	log.Info("window added", "window", id)
-	wm.Windows = append(wm.Windows, window.NewWindow(id))
+	wm.Windows = append(wm.Windows, window.NewWindow(id, wm))
 }
 
 func (wm *WindowManager) HandleRiverWindowManagerV1Seat(ctx context.Context, id proto.RiverSeatV1) {

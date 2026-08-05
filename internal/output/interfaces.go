@@ -9,3 +9,19 @@ type WindowManager interface {
 }
 
 // advertised
+
+func (o *Output) GetX() int32 {
+	return o.X
+}
+
+func (o *Output) GetY() int32 {
+	return o.Y
+}
+
+func (o *Output) GetWidth() int32 {
+	return o.Width
+}
+
+func (o *Output) GetHeight() int32 {
+	return o.Height
+}

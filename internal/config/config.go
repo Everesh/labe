@@ -15,12 +15,15 @@ func ConfigureBindings(s Seat) ([]*xkb.Binding, []*xkb.PointerBinding) {
 
 	bindings := []*xkb.Binding{
 		xkb.NewBinding(s, xkb.KEY_Return, mainMod, func() {
+			s.MarkSeatLastActive()
 			Spawn("alacritty")
 		}),
 		xkb.NewBinding(s, xkb.KEY_Return, mainMod+proto.RiverSeatV1ModifiersShift, func() {
+			s.MarkSeatLastActive()
 			Spawn("ghostty")
 		}),
 		xkb.NewBinding(s, xkb.KEY_Return, mainMod+proto.RiverSeatV1ModifiersShift+proto.RiverSeatV1ModifiersCtrl, func() {
+			s.MarkSeatLastActive()
 			Spawn("foot")
 		}),
 		xkb.NewBinding(s, xkb.KEY_c, mainMod, func() {
@@ -29,15 +32,19 @@ func ConfigureBindings(s Seat) ([]*xkb.Binding, []*xkb.PointerBinding) {
 			}
 		}),
 		xkb.NewBinding(s, xkb.KEY_z, mainMod, func() {
+			s.MarkSeatLastActive()
 			Spawn("wofi", "--show", "run")
 		}),
 		xkb.NewBinding(s, xkb.KEY_z, mainMod+proto.RiverSeatV1ModifiersShift, func() {
+			s.MarkSeatLastActive()
 			Spawn("zeditor")
 		}),
 		xkb.NewBinding(s, xkb.KEY_f, mainMod+proto.RiverSeatV1ModifiersShift, func() {
+			s.MarkSeatLastActive()
 			Spawn("nautilus")
 		}),
 		xkb.NewBinding(s, xkb.KEY_w, mainMod+proto.RiverSeatV1ModifiersShift, func() {
+			s.MarkSeatLastActive()
 			Spawn("firefox")
 		}),
 		xkb.NewBinding(s, xkb.KEY_n, mainMod, func() {

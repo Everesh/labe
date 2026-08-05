@@ -24,11 +24,13 @@ type WindowManager struct {
 	Done bool
 	Err  error
 
-	// TODO - TEMPORARY FIELDS
-	Windows           []*window.Window
-	Seats             []*seat.Seat
-	Outputs           []*output.Output
+	Windows []*window.Window
+	Seats   []*seat.Seat
+	Outputs []*output.Output
+
+	DefaultOutput     *output.Output
 	DefaultLayerShell *output.Output
+	LastActiveSeat    *seat.Seat
 }
 
 func New(ctx context.Context, conn *wlcl.Connection) (*WindowManager, error) {
@@ -57,4 +59,13 @@ func New(ctx context.Context, conn *wlcl.Connection) (*WindowManager, error) {
 
 func (wm *WindowManager) GetLayerShellOutput(output proto.RiverOutputV1) proto.RiverLayerShellOutputV1 {
 	return wm.LayerShellV1.GetOutput(output)
+}
+
+func (wm *WindowManager) OutputAt(x, y int32) window.Output {
+	for _, o := range wm.Outputs {
+		if o.Contains(x, y) {
+			return o
+		}
+	}
+	return nil
 }

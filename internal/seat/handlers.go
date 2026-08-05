@@ -26,6 +26,7 @@ func (s *Seat) HandleRiverSeatV1PointerLeave(ctx context.Context) {
 func (s *Seat) HandleRiverSeatV1WindowInteraction(ctx context.Context, w proto.RiverWindowV1) {
 	log.Debug("pointer interacted", "seat", s.Object, "window", w)
 	s.Interacted = w.UserData().(*window.Window)
+	s.WM.MarkSeatLastActive(s)
 }
 
 func (s *Seat) HandleRiverSeatV1PointerPosition(ctx context.Context, x int32, y int32) {

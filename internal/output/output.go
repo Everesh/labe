@@ -9,8 +9,16 @@ type Output struct {
 	Object           proto.RiverOutputV1
 	LayerShellObject proto.RiverLayerShellOutputV1
 
+	X, Y          int32
+	Width, Height int32
+
 	Removed                     bool
 	PendingSetDefaultLayerShell bool
+}
+
+func (o *Output) Contains(x, y int32) bool {
+	return x >= o.X && x < o.X+o.Width &&
+		y >= o.Y && y < o.Y+o.Height
 }
 
 func (o *Output) Manage() {

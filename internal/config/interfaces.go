@@ -12,6 +12,7 @@ type Seat interface {
 	GetPointerBinding(button uint32, mods uint32) proto.RiverPointerBindingV1
 	SetPendingAction(fn func())
 
+	MarkSeatLastActive()
 	GetFocused() *window.Window
 	GetHovered() *window.Window
 	GetPosition() (x, y int32)

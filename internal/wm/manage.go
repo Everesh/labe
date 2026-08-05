@@ -24,6 +24,16 @@ func (wm *WindowManager) HandleRiverWindowManagerV1ManageStart(ctx context.Conte
 		}
 	}
 
+	// if no default output, pick the first in the slice
+	// used when there is no last active seat from which to infer active output
+	if wm.DefaultOutput == nil || wm.DefaultOutput.Removed {
+		if len(wm.Outputs) > 0 {
+			wm.DefaultOutput = wm.Outputs[0]
+		} else {
+			wm.DefaultOutput = nil
+		}
+	}
+
 	for _, w := range wm.Windows {
 		w.Manage()
 	}
