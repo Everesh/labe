@@ -11,8 +11,8 @@ import (
 	"syscall"
 
 	"charm.land/log/v2"
+	"codeberg.org/everesh/labe/internal/config"
 	"codeberg.org/everesh/labe/internal/wm"
-	"codeberg.org/everesh/labe/internal/xkb"
 	"hazelnut.eclair.cafe/wlcl"
 )
 
@@ -45,7 +45,7 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("failed to initialize the window manager: %w", err)
 	}
 
-	xkb.StartupHooks()
+	config.StartupHooks()
 
 	for !windowManager.Done {
 		if err := conn.Dispatch(ctx); err != nil {

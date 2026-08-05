@@ -1,4 +1,4 @@
-package xkb
+package config
 
 import (
 	"os/exec"

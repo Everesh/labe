@@ -1,52 +1,55 @@
-package xkb
+package config
 
 import (
 	"charm.land/log/v2"
 	"codeberg.org/everesh/labe/internal/proto"
+	"codeberg.org/everesh/labe/internal/xkb"
 )
 
-func ConfigureBindings(s Seat) ([]*Binding, []*PointerBinding) {
+// TODO - hook up this to a conf file parser so the keybinds are not hardcoded
+
+func ConfigureBindings(s Seat) ([]*xkb.Binding, []*xkb.PointerBinding) {
 
 	// 1 - L-ALT, 4 - Super
 	const mainMod = proto.RiverSeatV1ModifiersMod1
 
-	bindings := []*Binding{
-		NewBinding(s, Key.Return, mainMod, func() {
+	bindings := []*xkb.Binding{
+		xkb.NewBinding(s, xkb.KEY_Return, mainMod, func() {
 			Spawn("alacritty")
 		}),
-		NewBinding(s, Key.Return, mainMod+proto.RiverSeatV1ModifiersShift, func() {
+		xkb.NewBinding(s, xkb.KEY_Return, mainMod+proto.RiverSeatV1ModifiersShift, func() {
 			Spawn("ghostty")
 		}),
-		NewBinding(s, Key.Return, mainMod+proto.RiverSeatV1ModifiersShift+proto.RiverSeatV1ModifiersCtrl, func() {
+		xkb.NewBinding(s, xkb.KEY_Return, mainMod+proto.RiverSeatV1ModifiersShift+proto.RiverSeatV1ModifiersCtrl, func() {
 			Spawn("foot")
 		}),
-		NewBinding(s, Key.c, mainMod, func() {
+		xkb.NewBinding(s, xkb.KEY_c, mainMod, func() {
 			if w := s.GetFocused(); w != nil {
 				w.Object.Close()
 			}
 		}),
-		NewBinding(s, Key.z, mainMod, func() {
+		xkb.NewBinding(s, xkb.KEY_z, mainMod, func() {
 			Spawn("wofi", "--show", "run")
 		}),
-		NewBinding(s, Key.f, mainMod+proto.RiverSeatV1ModifiersShift, func() {
+		xkb.NewBinding(s, xkb.KEY_f, mainMod+proto.RiverSeatV1ModifiersShift, func() {
 			Spawn("nautilus")
 		}),
-		NewBinding(s, Key.w, mainMod+proto.RiverSeatV1ModifiersShift, func() {
+		xkb.NewBinding(s, xkb.KEY_w, mainMod+proto.RiverSeatV1ModifiersShift, func() {
 			Spawn("firefox")
 		}),
-		NewBinding(s, Key.n, mainMod, func() {
+		xkb.NewBinding(s, xkb.KEY_n, mainMod, func() {
 			windows := s.GetWindows()
 			if len(windows) > 0 {
 				s.Focus(windows[0])
 			}
 		}),
-		NewBinding(s, Key.Esc, mainMod, func() {
+		xkb.NewBinding(s, xkb.KEY_c, mainMod, func() {
 			s.ExitSession()
 		}),
 	}
 
-	pointerBindings := []*PointerBinding{
-		NewPointerBinding(s, Key.LeftPointer, mainMod, func() {
+	pointerBindings := []*xkb.PointerBinding{
+		xkb.NewPointerBinding(s, xkb.KEY_LeftPointer, mainMod, func() {
 			w := s.GetHovered()
 			if w == nil {
 				return
@@ -55,7 +58,7 @@ func ConfigureBindings(s Seat) ([]*Binding, []*PointerBinding) {
 			log.Debug("operation requested, window move, via keybind", "window", w.Object)
 			s.PointerMove(w)
 		}),
-		NewPointerBinding(s, Key.RightPointer, mainMod, func() {
+		xkb.NewPointerBinding(s, xkb.KEY_RightPointer, mainMod, func() {
 			w := s.GetHovered()
 			if w == nil {
 				return

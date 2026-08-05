@@ -1,6 +1,7 @@
 package seat
 
 import (
+	"codeberg.org/everesh/labe/internal/config"
 	"codeberg.org/everesh/labe/internal/proto"
 	"codeberg.org/everesh/labe/internal/window"
 	"codeberg.org/everesh/labe/internal/xkb"
@@ -134,7 +135,7 @@ func NewSeat(object proto.RiverSeatV1, wm WindowManager) *Seat {
 		New:    true,
 	}
 
-	seat.Bindings, seat.PointerBindings = xkb.ConfigureBindings(seat)
+	seat.Bindings, seat.PointerBindings = config.ConfigureBindings(seat)
 
 	seat.Object.SetUserData(seat)
 	return seat
