@@ -6,63 +6,47 @@ import (
 )
 
 func ConfigureBindings(s Seat) ([]*Binding, []*PointerBinding) {
-	const (
-		// See xkbcommon-keysyms.h
-		escSym   = 0xff1b
-		enterSym = 0xff0d
-		spaceSym = 0x0020
-
-		nSym = 0x006e
-		qSym = 0x0071
-		cSym = 0x0063
-		zSym = 0x007a
-		fSym = 0x0066
-		wSym = 0x0077
-
-		leftButton  = 0x110
-		rightButton = 0x111
-	)
 
 	// 1 - L-ALT, 4 - Super
 	const mainMod = proto.RiverSeatV1ModifiersMod1
 
 	bindings := []*Binding{
-		NewBinding(s, enterSym, mainMod, func() {
+		NewBinding(s, Key.Return, mainMod, func() {
 			Spawn("alacritty")
 		}),
-		NewBinding(s, enterSym, mainMod+proto.RiverSeatV1ModifiersShift, func() {
+		NewBinding(s, Key.Return, mainMod+proto.RiverSeatV1ModifiersShift, func() {
 			Spawn("ghostty")
 		}),
-		NewBinding(s, enterSym, mainMod+proto.RiverSeatV1ModifiersShift+proto.RiverSeatV1ModifiersCtrl, func() {
+		NewBinding(s, Key.Return, mainMod+proto.RiverSeatV1ModifiersShift+proto.RiverSeatV1ModifiersCtrl, func() {
 			Spawn("foot")
 		}),
-		NewBinding(s, cSym, mainMod, func() {
+		NewBinding(s, Key.c, mainMod, func() {
 			if w := s.GetFocused(); w != nil {
 				w.Object.Close()
 			}
 		}),
-		NewBinding(s, zSym, mainMod, func() {
+		NewBinding(s, Key.z, mainMod, func() {
 			Spawn("wofi", "--show", "run")
 		}),
-		NewBinding(s, fSym, mainMod+proto.RiverSeatV1ModifiersShift, func() {
+		NewBinding(s, Key.f, mainMod+proto.RiverSeatV1ModifiersShift, func() {
 			Spawn("nautilus")
 		}),
-		NewBinding(s, wSym, mainMod+proto.RiverSeatV1ModifiersShift, func() {
+		NewBinding(s, Key.w, mainMod+proto.RiverSeatV1ModifiersShift, func() {
 			Spawn("firefox")
 		}),
-		NewBinding(s, nSym, mainMod, func() {
+		NewBinding(s, Key.n, mainMod, func() {
 			windows := s.GetWindows()
 			if len(windows) > 0 {
 				s.Focus(windows[0])
 			}
 		}),
-		NewBinding(s, escSym, mainMod, func() {
+		NewBinding(s, Key.Esc, mainMod, func() {
 			s.ExitSession()
 		}),
 	}
 
 	pointerBindings := []*PointerBinding{
-		NewPointerBinding(s, leftButton, mainMod, func() {
+		NewPointerBinding(s, Key.LeftPointer, mainMod, func() {
 			w := s.GetHovered()
 			if w == nil {
 				return
@@ -71,7 +55,7 @@ func ConfigureBindings(s Seat) ([]*Binding, []*PointerBinding) {
 			log.Debug("operation requested, window move, via keybind", "window", w.Object)
 			s.PointerMove(w)
 		}),
-		NewPointerBinding(s, rightButton, mainMod, func() {
+		NewPointerBinding(s, Key.RightPointer, mainMod, func() {
 			w := s.GetHovered()
 			if w == nil {
 				return
