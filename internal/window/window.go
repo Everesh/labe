@@ -113,6 +113,11 @@ func (w *Window) ProposeDimensions(fill bool) {
 	oX := w.Output.GetX()
 	oY := w.Output.GetY()
 
+	// maximize on top overflow
+	if w.Y < oY {
+		fill = true
+	}
+
 	if w.Output != nil {
 		if oWidth < w.Width || fill {
 			w.Width = oWidth
