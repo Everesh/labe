@@ -1,6 +1,8 @@
 package seat
 
-import "codeberg.org/everesh/labe/internal/window"
+import (
+	"codeberg.org/everesh/labe/internal/window"
+)
 
 type OpMove struct {
 	StartX, StartY int32
@@ -14,7 +16,9 @@ func (s *OpMove) Render(state *OpState) {
 
 func (s *OpMove) InformStart(w *window.Window) {}
 
-func (s *OpMove) InformEnd(w *window.Window) {}
+func (s *OpMove) InformEnd(w *window.Window) {
+	w.UpdateOutput()
+}
 
 func NewOpMove(w *window.Window) *OpMove {
 	return &OpMove{

@@ -11,6 +11,7 @@ type Window struct {
 	Object proto.RiverWindowV1
 	Node   proto.RiverNodeV1
 	WM     WindowManager
+	Output Output
 
 	X, Y                int32
 	Width, Height       int32
@@ -39,7 +40,9 @@ func (w *Window) Manage() {
 		log.Debug("managing new window", "window", w.Object)
 
 		w.New = false
+
 		w.Object.ProposeDimensions(0, 0)
+		w.UpdateOutput()
 	}
 
 	if w.DecorationHinted {
@@ -75,16 +78,9 @@ func (w *Window) Render() {
 		log.Debug("adjusting postition", "window", w.Object)
 		w.PendingPosition = false
 
-		var o Output
-		if s := w.WM.GetLastActiveSeat(); s != nil {
-			o = w.WM.OutputAt(s.GetX(), s.GetY())
-		} else {
-			o = w.WM.GetDefaultOutput()
-		}
-
-		if o != nil {
-			oHeight := o.GetHeight()
-			oWidth := o.GetWidth()
+		if w.Output != nil {
+			oHeight := w.Output.GetHeight()
+			oWidth := w.Output.GetWidth()
 
 			if w.Height > oHeight {
 				w.Height = oHeight
@@ -94,13 +90,31 @@ func (w *Window) Render() {
 				w.Width = oWidth
 			}
 
-			w.X = o.GetX() + ((oWidth - w.Width) / 2)
-			w.Y = o.GetY() + ((oHeight - w.Height) / 2)
+			w.X = w.Output.GetX() + ((oWidth - w.Width) / 2)
+			w.Y = w.Output.GetY() + ((oHeight - w.Height) / 2)
 		} else {
-			log.Error("window render loop could not find any outputs")
+			log.Error("window render loop could not find any outputs ?!??", "window", w.Object)
 		}
 
 		w.SetPosition(w.X, w.Y)
+	}
+}
+
+func (w *Window) UpdateOutput() {
+	var o Output
+	if s := w.WM.GetLastActiveSeat(); s != nil {
+		o = w.WM.OutputAt(s.GetX(), s.GetY())
+	} else {
+		o = w.WM.GetDefaultOutput()
+	}
+
+	if o != nil {
+		w.Output = o
+	} else {
+		log.Warn("failed to update window output, retaining previous one", "window", w.Object)
+		if w.Output == nil {
+			log.Error("THERE IS NO PREVIOUS OUTPUT FOR THE WINDOW, THE FUCK IS HAPPENING", "window", w.Object)
+		}
 	}
 }
 
