@@ -50,6 +50,7 @@ func (s *OpResize) InformStart(w *window.Window) {
 
 func (s *OpResize) InformEnd(w *window.Window) {
 	w.Object.InformResizeEnd()
+	w.ProposeDimensions(false)
 }
 
 func NewOpResize(w *window.Window, edges uint32) *OpResize {

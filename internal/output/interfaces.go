@@ -11,17 +11,17 @@ type WindowManager interface {
 // advertised
 
 func (o *Output) GetX() int32 {
-	return o.X
+	return o.NonExclusiveX
 }
 
 func (o *Output) GetY() int32 {
-	return o.Y
+	return o.NonExclusiveY
 }
 
 func (o *Output) GetWidth() int32 {
-	return o.Width
+	return o.NonExclusiveWidth
 }
 
 func (o *Output) GetHeight() int32 {
-	return o.Height
+	return o.NonExclusiveHeight
 }

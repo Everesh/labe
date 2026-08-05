@@ -38,11 +38,9 @@ func (w *Window) SetPosition(x, y int32) {
 func (w *Window) Manage() {
 	if w.New {
 		log.Debug("managing new window", "window", w.Object)
-
 		w.New = false
-
-		w.Object.ProposeDimensions(0, 0)
 		w.UpdateOutput()
+		w.ProposeDimensions(true)
 	}
 
 	if w.DecorationHinted {
@@ -76,22 +74,11 @@ func (w *Window) Manage() {
 func (w *Window) Render() {
 	if w.PendingPosition {
 		log.Debug("adjusting postition", "window", w.Object)
-		w.PendingPosition = false
+		// w.PendingPosition = false
 
 		if w.Output != nil {
-			oHeight := w.Output.GetHeight()
-			oWidth := w.Output.GetWidth()
-
-			if w.Height > oHeight {
-				w.Height = oHeight
-			}
-
-			if w.Width > oWidth {
-				w.Width = oWidth
-			}
-
-			w.X = w.Output.GetX() + ((oWidth - w.Width) / 2)
-			w.Y = w.Output.GetY() + ((oHeight - w.Height) / 2)
+			w.X = w.Output.GetX() + ((w.Output.GetWidth() - w.Width) / 2)
+			w.Y = w.Output.GetY() + ((w.Output.GetHeight() - w.Height) / 2)
 		} else {
 			log.Error("window render loop could not find any outputs ?!??", "window", w.Object)
 		}
@@ -116,6 +103,27 @@ func (w *Window) UpdateOutput() {
 			log.Error("THERE IS NO PREVIOUS OUTPUT FOR THE WINDOW, THE FUCK IS HAPPENING", "window", w.Object)
 		}
 	}
+}
+
+func (w *Window) ProposeDimensions(fill bool) {
+	log.Debug("new dimensions proposed", "window", w.Object)
+	if w.Output != nil {
+		oWidth := w.Output.GetWidth()
+		oHeight := w.Output.GetHeight()
+
+		if oWidth < w.Width || fill {
+			w.Width = oWidth
+		}
+
+		if oHeight < w.Height || fill {
+			w.Height = oHeight
+		}
+	} else {
+		log.Error("undefined output for window, could not propose dimensions, handing decision off to the client", "window", w.Object)
+	}
+
+	// 0,0 is a special case that lets the window decide on its own
+	w.Object.ProposeDimensions(w.Width, w.Height)
 }
 
 func (w *Window) MaybeDestroy() bool {

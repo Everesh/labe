@@ -12,6 +12,9 @@ type Output struct {
 	X, Y          int32
 	Width, Height int32
 
+	NonExclusiveX, NonExclusiveY          int32
+	NonExclusiveWidth, NonExclusiveHeight int32
+
 	Removed                     bool
 	PendingSetDefaultLayerShell bool
 }
