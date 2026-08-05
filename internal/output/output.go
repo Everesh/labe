@@ -4,10 +4,20 @@ import "codeberg.org/everesh/labe/internal/proto"
 
 type Output struct {
 	proto.RiverOutputV1Stub
+	proto.RiverLayerShellOutputV1Stub
 
-	Object proto.RiverOutputV1
+	Object           proto.RiverOutputV1
+	LayerShellObject proto.RiverLayerShellOutputV1
 
-	Removed bool
+	Removed                     bool
+	PendingSetDefaultLayerShell bool
+}
+
+func (o *Output) Manage() {
+	if o.PendingSetDefaultLayerShell {
+		o.LayerShellObject.SetDefault()
+		o.PendingSetDefaultLayerShell = false
+	}
 }
 
 func (o *Output) MaybeDestroy() bool {
@@ -16,14 +26,22 @@ func (o *Output) MaybeDestroy() bool {
 	}
 
 	o.Object.Destroy()
+	o.LayerShellObject.Destroy()
 	return true
 }
 
-func NewOutput(object proto.RiverOutputV1) *Output {
+func (o *Output) SetDefaultLayerShell() {
+	o.PendingSetDefaultLayerShell = true
+}
+
+func NewOutput(object proto.RiverOutputV1, wm WindowManager) *Output {
+	layerShellOutput := wm.GetLayerShellOutput(object)
 	output := &Output{
-		Object: object,
+		Object:           object,
+		LayerShellObject: layerShellOutput,
 	}
 
 	object.SetUserData(output)
+	layerShellOutput.SetUserData(output)
 	return output
 }
