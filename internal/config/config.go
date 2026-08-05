@@ -11,7 +11,7 @@ import (
 func ConfigureBindings(s Seat) ([]*xkb.Binding, []*xkb.PointerBinding) {
 
 	// 1 - L-ALT, 4 - Super
-	const mainMod = proto.RiverSeatV1ModifiersMod1
+	const mainMod = proto.RiverSeatV1ModifiersMod4
 
 	bindings := []*xkb.Binding{
 		xkb.NewBinding(s, xkb.KEY_Return, mainMod, func() {
@@ -30,6 +30,9 @@ func ConfigureBindings(s Seat) ([]*xkb.Binding, []*xkb.PointerBinding) {
 		}),
 		xkb.NewBinding(s, xkb.KEY_z, mainMod, func() {
 			Spawn("wofi", "--show", "run")
+		}),
+		xkb.NewBinding(s, xkb.KEY_z, mainMod+proto.RiverSeatV1ModifiersShift, func() {
+			Spawn("zeditor")
 		}),
 		xkb.NewBinding(s, xkb.KEY_f, mainMod+proto.RiverSeatV1ModifiersShift, func() {
 			Spawn("nautilus")
