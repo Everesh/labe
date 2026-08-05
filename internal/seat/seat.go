@@ -103,6 +103,12 @@ func (s *Seat) PointerResize(w *window.Window, edges uint32) {
 }
 
 func (s *Seat) Focus(w *window.Window) {
+	// If nil passed, try to refocus on the last (newest) window
+	windows := s.WM.GetWindows()
+	if w == nil && len(windows) > 0 {
+		w = windows[len(windows)-1]
+	}
+
 	if s.Focused == w {
 		return
 	}
