@@ -53,7 +53,7 @@ func ConfigureBindings(s Seat) ([]*xkb.Binding, []*xkb.PointerBinding) {
 				s.Focus(windows[0])
 			}
 		}),
-		xkb.NewBinding(s, xkb.KEY_c, mainMod, func() {
+		xkb.NewBinding(s, xkb.KEY_m, mainMod, func() {
 			s.ExitSession()
 		}),
 	}
