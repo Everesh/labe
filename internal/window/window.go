@@ -74,7 +74,7 @@ func (w *Window) Manage() {
 func (w *Window) Render() {
 	if w.PendingPosition {
 		log.Debug("adjusting postition", "window", w.Object)
-		// w.PendingPosition = false
+		w.PendingPosition = false
 
 		if w.Output != nil {
 			w.X = w.Output.GetX() + ((w.Output.GetWidth() - w.Width) / 2)
@@ -107,19 +107,27 @@ func (w *Window) UpdateOutput() {
 
 func (w *Window) ProposeDimensions(fill bool) {
 	log.Debug("new dimensions proposed", "window", w.Object)
-	if w.Output != nil {
-		oWidth := w.Output.GetWidth()
-		oHeight := w.Output.GetHeight()
 
+	oWidth := w.Output.GetWidth()
+	oHeight := w.Output.GetHeight()
+	oX := w.Output.GetX()
+	oY := w.Output.GetY()
+
+	if w.Output != nil {
 		if oWidth < w.Width || fill {
 			w.Width = oWidth
 		}
-
 		if oHeight < w.Height || fill {
 			w.Height = oHeight
 		}
 	} else {
 		log.Error("undefined output for window, could not propose dimensions, handing decision off to the client", "window", w.Object)
+	}
+
+	if w.X+w.Width > oX+oWidth ||
+		w.Y+w.Height > oY+oHeight ||
+		w.Y < oY || w.X < oX {
+		w.PendingPosition = true
 	}
 
 	// 0,0 is a special case that lets the window decide on its own
