@@ -30,8 +30,9 @@ func (wm *WindowManager) HandleRiverWindowManagerV1Window(ctx context.Context, i
 	log.Info("window added", "window", id)
 	window := window.NewWindow(id, wm)
 	wm.Windows = append(wm.Windows, window)
-	wm.LastActiveSeat.Focus(window)
-
+	if s := wm.LastActiveSeat; s != nil {
+		s.Focus(window)
+	}
 }
 
 func (wm *WindowManager) HandleRiverWindowManagerV1Seat(ctx context.Context, id proto.RiverSeatV1) {
