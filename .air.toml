@@ -3,7 +3,7 @@ tmp_dir = "air_tmp"
 
 [build]
 cmd = "go build -o ./air_tmp/labe ."
-full_bin = "WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-wayland-2} ./air_tmp/labe"
+entrypoint = ["./air_tmp/labe"]
 include_ext = ["go"]
 exclude_dir = ["air_tmp", "assets"]
 send_interrupt = true
