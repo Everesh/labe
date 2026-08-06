@@ -2,6 +2,7 @@ package window
 
 import (
 	"context"
+	"time"
 
 	"charm.land/log/v2"
 	"codeberg.org/everesh/labe/internal/proto"
@@ -13,8 +14,19 @@ func (w *Window) HandleRiverWindowV1Closed(ctx context.Context) {
 }
 
 func (w *Window) HandleRiverWindowV1Dimensions(ctx context.Context, width int32, height int32) {
-	log.Debug("window dimensions changed", "window", w.Object, "width", width, "height", height)
 	w.Width, w.Height = width, height
+
+	// guard against spwaning unnecessary gorutines
+	if log.GetLevel() != log.DebugLevel {
+		return
+	}
+
+	if w.debounceTimer != nil {
+		w.debounceTimer.Stop()
+	}
+	w.debounceTimer = time.AfterFunc(150*time.Millisecond, func() {
+		log.Debug("window dimensions changed", "window", w.Object, "width", width, "height", height)
+	})
 }
 
 func (w *Window) HandleRiverWindowV1PointerMoveRequested(ctx context.Context, s proto.RiverSeatV1) {

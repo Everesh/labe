@@ -1,6 +1,8 @@
 package window
 
 import (
+	"time"
+
 	"charm.land/log/v2"
 	"codeberg.org/everesh/labe/internal/proto"
 )
@@ -28,6 +30,8 @@ type Window struct {
 	PendingPosition  bool
 	Closed           bool
 	DecorationHinted bool
+
+	debounceTimer *time.Timer
 }
 
 func (w *Window) SetPosition(x, y int32) {
