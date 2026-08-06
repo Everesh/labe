@@ -49,23 +49,11 @@ func New(ctx context.Context, conn *wlcl.Connection) (*WindowManager, error) {
 
 	if !wm.Registry.IsSet() ||
 		!wm.WindowManagerV1.IsSet() ||
-		!wm.XkbBindingsV1.IsSet() {
+		!wm.XkbBindingsV1.IsSet() ||
+		!wm.LayerShellV1.IsSet() {
 		return nil, fmt.Errorf("failed to register all globals")
 	}
 
 	wm.WindowManagerV1.SetUserData(wm)
 	return wm, nil
-}
-
-func (wm *WindowManager) GetLayerShellOutput(output proto.RiverOutputV1) proto.RiverLayerShellOutputV1 {
-	return wm.LayerShellV1.GetOutput(output)
-}
-
-func (wm *WindowManager) OutputAt(x, y int32) window.Output {
-	for _, o := range wm.Outputs {
-		if o.Contains(x, y) {
-			return o
-		}
-	}
-	return nil
 }
