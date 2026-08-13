@@ -1,9 +1,63 @@
 package bsp
 
 import (
-	"charm.land/log/v2"
+	"fmt"
+
+	"codeberg.org/everesh/labe/internal/layout"
 	"codeberg.org/everesh/labe/internal/window"
 )
+
+var _ layout.Layout = (*Tree)(nil)
+
+type Tree struct {
+	Root *Node
+}
+
+func New() *Tree {
+	return &Tree{}
+}
+
+func (t *Tree) Add(w *window.Window) error {
+	if t.Root.Find(w) != nil {
+		return fmt.Errorf("bsp: window is already part of the tree")
+	}
+
+	if t.Root == nil {
+		t.Root = newNode(w, nil)
+		return nil
+	}
+
+	target := t.Root
+	if st := w.SplitTarget; st != nil {
+		if found := t.Root.Find(st); found != nil {
+			target = found
+		}
+	}
+	w.SplitTarget = nil
+
+	newNode(w, target)
+	return nil
+}
+
+func (t *Tree) Remove(w *window.Window) error {
+	if t.Root == nil {
+		return nil
+	}
+
+	if t.Root.Remove(w) {
+		t.Root = nil
+	}
+
+	return nil
+}
+
+func (t *Tree) Align(x, y, width, height int32) error {
+	if t.Root == nil {
+		return nil
+	}
+
+	return t.Root.Align(x, y, width, height)
+}
 
 type Node struct {
 	Window *window.Window
@@ -12,7 +66,7 @@ type Node struct {
 	Right *Node
 }
 
-func New(win *window.Window, root *Node) *Node {
+func newNode(win *window.Window, root *Node) *Node {
 	node := &Node{
 		Window: win,
 	}
@@ -72,24 +126,26 @@ func (n *Node) Remove(win *window.Window) bool {
 	return false
 }
 
-func (n *Node) Align(x, y, width, height int32) {
+func (n *Node) Align(x, y, width, height int32) error {
 	if n.Window == nil {
 		if n.Left == nil || n.Right == nil {
-			log.Error("align call on bsp node failed, window and at least one of the leafs are nil", "x", x, "y", y, "width", width, "height", height)
-			return
+			return fmt.Errorf("bsp: align called on a node with a nil window and at least one nil leaf (x=%d y=%d width=%d height=%d)", x, y, width, height)
 		}
 
 		if width < height {
-			n.Left.Align(x, y, width, height/2)
-			n.Right.Align(x, y+height/2, width, height/2)
-		} else {
-			n.Left.Align(x, y, width/2, height)
-			n.Right.Align(x+width/2, y, width/2, height)
+			if err := n.Left.Align(x, y, width, height/2); err != nil {
+				return err
+			}
+			return n.Right.Align(x, y+height/2, width, height/2)
 		}
 
-		return
+		if err := n.Left.Align(x, y, width/2, height); err != nil {
+			return err
+		}
+		return n.Right.Align(x+width/2, y, width/2, height)
 	}
 
 	n.Window.SetPosition(x, y)
 	n.Window.ProposeDimensions(width, height, false)
+	return nil
 }

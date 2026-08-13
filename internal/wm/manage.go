@@ -38,7 +38,7 @@ func (wm *WindowManager) HandleRiverWindowManagerV1ManageStart(ctx context.Conte
 		w.Manage()
 	}
 
-	wm.AlignBSP()
+	wm.AlignLayout()
 
 	for _, s := range wm.Seats {
 		s.Manage()

@@ -5,6 +5,8 @@ import (
 	"codeberg.org/everesh/labe/internal/window"
 )
 
+var _ Op = (*OpResize)(nil)
+
 type OpResize struct {
 	StartX, StartY          int32
 	StartWidth, StartHeight int32

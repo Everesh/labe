@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"codeberg.org/everesh/labe/internal/layout"
 	"codeberg.org/everesh/labe/internal/layout/bsp"
 	"codeberg.org/everesh/labe/internal/output"
 	"codeberg.org/everesh/labe/internal/proto"
@@ -29,7 +30,7 @@ type WindowManager struct {
 	Seats   []*seat.Seat
 	Outputs []*output.Output
 
-	Bsp *bsp.Node
+	Layout layout.Layout
 
 	DefaultOutput     *output.Output
 	DefaultLayerShell *output.Output
@@ -43,6 +44,7 @@ func New(ctx context.Context, conn *wlcl.Connection) (*WindowManager, error) {
 	display := proto.CreateDisplay(conn)
 
 	wm := &WindowManager{}
+	wm.Layout = bsp.New()
 	wm.Registry = display.GetRegistry()
 	wm.Registry.SetUserData(wm)
 

@@ -14,8 +14,8 @@ type WindowManager interface {
 	OutputAt(x, y int32) Output
 	GetDefaultOutput() Output
 	GetLastActiveSeat() Seat
-	AddToBSP(w *Window) bool
-	RemoveFromBSP(w *Window)
+	AddToLayout(w *Window) bool
+	RemoveFromLayout(w *Window)
 }
 
 type Output interface {

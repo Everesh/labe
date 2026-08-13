@@ -4,6 +4,8 @@ import (
 	"codeberg.org/everesh/labe/internal/window"
 )
 
+var _ Op = (*OpMove)(nil)
+
 type OpMove struct {
 	StartX, StartY int32
 }

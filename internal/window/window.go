@@ -49,7 +49,7 @@ func (w *Window) Manage() {
 		w.New = false
 		w.UpdateOutput()
 
-		if !w.WM.AddToBSP(w) {
+		if !w.WM.AddToLayout(w) {
 			w.ProposeDimensions(0, 0, true)
 		}
 	}
@@ -113,11 +113,11 @@ func (w *Window) UpdateOutput() {
 
 		if old != nil {
 			if old == defOut && o != defOut {
-				w.WM.RemoveFromBSP(w)
+				w.WM.RemoveFromLayout(w)
 			}
 
 			if old != defOut && o == defOut {
-				w.WM.AddToBSP(w)
+				w.WM.AddToLayout(w)
 			}
 		}
 	} else {
@@ -170,7 +170,7 @@ func (w *Window) MaybeDestroy() bool {
 		return false
 	}
 
-	w.WM.RemoveFromBSP(w)
+	w.WM.RemoveFromLayout(w)
 	w.Node.Destroy()
 	w.Object.Destroy()
 	return true

@@ -1,7 +1,7 @@
 package wm
 
 import (
-	"codeberg.org/everesh/labe/internal/layout/bsp"
+	"charm.land/log/v2"
 	"codeberg.org/everesh/labe/internal/proto"
 	"codeberg.org/everesh/labe/internal/seat"
 	"codeberg.org/everesh/labe/internal/window"
@@ -54,52 +54,36 @@ func (wm *WindowManager) GetDefaultOutput() window.Output {
 	return wm.DefaultOutput
 }
 
-func (wm *WindowManager) AddToBSP(w *window.Window) bool {
+func (wm *WindowManager) AddToLayout(w *window.Window) bool {
 	// TODO - only tile the default output for now
 	if wm.DefaultOutput == nil || w.Output != wm.DefaultOutput {
 		return false
 	}
 
-	if wm.Bsp.Find(w) != nil {
-		return true
+	if err := wm.Layout.Add(w); err != nil {
+		log.Error("failed to add window to layout", "window", w.Object, "error", err)
+		return false
 	}
 
-	if wm.Bsp == nil {
-		wm.Bsp = bsp.New(w, nil)
-		wm.AlignBSP()
-		return true
-	}
-
-	target := wm.Bsp
-	if t := w.SplitTarget; t != nil {
-		if found := wm.Bsp.Find(t); found != nil {
-			target = found
-		}
-	}
-	w.SplitTarget = nil
-
-	bsp.New(w, target)
-
-	wm.AlignBSP()
+	wm.AlignLayout()
 	return true
 }
 
-func (wm *WindowManager) RemoveFromBSP(w *window.Window) {
-	if wm.Bsp == nil {
-		return
+func (wm *WindowManager) RemoveFromLayout(w *window.Window) {
+	if err := wm.Layout.Remove(w); err != nil {
+		log.Error("failed to remove window from layout", "window", w.Object, "error", err)
 	}
 
-	if wm.Bsp.Remove(w) {
-		wm.Bsp = nil
-	}
-
-	wm.AlignBSP()
+	wm.AlignLayout()
 }
 
-func (wm *WindowManager) AlignBSP() {
-	if wm.Bsp == nil || wm.DefaultOutput == nil {
+func (wm *WindowManager) AlignLayout() {
+	if wm.DefaultOutput == nil {
 		return
 	}
 
-	wm.Bsp.Align(wm.DefaultOutput.GetX(), wm.DefaultOutput.GetY(), wm.DefaultOutput.GetWidth(), wm.DefaultOutput.GetHeight())
+	err := wm.Layout.Align(wm.DefaultOutput.GetX(), wm.DefaultOutput.GetY(), wm.DefaultOutput.GetWidth(), wm.DefaultOutput.GetHeight())
+	if err != nil {
+		log.Error("failed to align layout", "error", err)
+	}
 }
