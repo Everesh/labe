@@ -31,6 +31,7 @@ func (wm *WindowManager) HandleRiverWindowManagerV1Window(ctx context.Context, i
 	window := window.NewWindow(id, wm)
 	wm.Windows = append(wm.Windows, window)
 	if s := wm.LastActiveSeat; s != nil {
+		window.SplitTarget = s.GetFocused()
 		s.Focus(window)
 	}
 }

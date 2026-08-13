@@ -7,12 +7,15 @@ type Seat interface {
 	PointerResize(w *Window, edges uint32)
 	GetX() int32
 	GetY() int32
+	GetFocused() *Window
 }
 
 type WindowManager interface {
 	OutputAt(x, y int32) Output
 	GetDefaultOutput() Output
 	GetLastActiveSeat() Seat
+	AddToBSP(w *Window) bool
+	RemoveFromBSP(w *Window)
 }
 
 type Output interface {

@@ -15,6 +15,10 @@ type Window struct {
 	WM     WindowManager
 	Output Output
 
+	// leaf to split when this window is inserted into the BSP tree,
+	// captured as whatever was focused right before this window took focus
+	SplitTarget *Window
+
 	X, Y                int32
 	Width, Height       int32
 	MaxWidth, MaxHeight int32
@@ -44,7 +48,10 @@ func (w *Window) Manage() {
 		log.Debug("managing new window", "window", w.Object)
 		w.New = false
 		w.UpdateOutput()
-		w.ProposeDimensions(0, 0, true)
+
+		if !w.WM.AddToBSP(w) {
+			w.ProposeDimensions(0, 0, true)
+		}
 	}
 
 	if w.DecorationHinted {
@@ -99,8 +106,20 @@ func (w *Window) UpdateOutput() {
 		o = w.WM.GetDefaultOutput()
 	}
 
-	if o != nil {
+	if o != nil && o != w.Output {
+		defOut := w.WM.GetDefaultOutput()
+		old := w.Output
 		w.Output = o
+
+		if old != nil {
+			if old == defOut && o != defOut {
+				w.WM.RemoveFromBSP(w)
+			}
+
+			if old != defOut && o == defOut {
+				w.WM.AddToBSP(w)
+			}
+		}
 	} else {
 		log.Warn("failed to update window output, retaining previous one", "window", w.Object)
 		if w.Output == nil {
@@ -151,6 +170,7 @@ func (w *Window) MaybeDestroy() bool {
 		return false
 	}
 
+	w.WM.RemoveFromBSP(w)
 	w.Node.Destroy()
 	w.Object.Destroy()
 	return true

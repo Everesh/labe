@@ -1,6 +1,7 @@
 package wm
 
 import (
+	"codeberg.org/everesh/labe/internal/layout/bsp"
 	"codeberg.org/everesh/labe/internal/proto"
 	"codeberg.org/everesh/labe/internal/seat"
 	"codeberg.org/everesh/labe/internal/window"
@@ -51,4 +52,54 @@ func (wm *WindowManager) GetDefaultOutput() window.Output {
 		return nil
 	}
 	return wm.DefaultOutput
+}
+
+func (wm *WindowManager) AddToBSP(w *window.Window) bool {
+	// TODO - only tile the default output for now
+	if wm.DefaultOutput == nil || w.Output != wm.DefaultOutput {
+		return false
+	}
+
+	if wm.Bsp.Find(w) != nil {
+		return true
+	}
+
+	if wm.Bsp == nil {
+		wm.Bsp = bsp.New(w, nil)
+		wm.AlignBSP()
+		return true
+	}
+
+	target := wm.Bsp
+	if t := w.SplitTarget; t != nil {
+		if found := wm.Bsp.Find(t); found != nil {
+			target = found
+		}
+	}
+	w.SplitTarget = nil
+
+	bsp.New(w, target)
+
+	wm.AlignBSP()
+	return true
+}
+
+func (wm *WindowManager) RemoveFromBSP(w *window.Window) {
+	if wm.Bsp == nil {
+		return
+	}
+
+	if wm.Bsp.Remove(w) {
+		wm.Bsp = nil
+	}
+
+	wm.AlignBSP()
+}
+
+func (wm *WindowManager) AlignBSP() {
+	if wm.Bsp == nil || wm.DefaultOutput == nil {
+		return
+	}
+
+	wm.Bsp.Align(wm.DefaultOutput.GetX(), wm.DefaultOutput.GetY(), wm.DefaultOutput.GetWidth(), wm.DefaultOutput.GetHeight())
 }

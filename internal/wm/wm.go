@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"codeberg.org/everesh/labe/internal/layout/bsp"
 	"codeberg.org/everesh/labe/internal/output"
 	"codeberg.org/everesh/labe/internal/proto"
 	"codeberg.org/everesh/labe/internal/seat"
@@ -27,6 +28,8 @@ type WindowManager struct {
 	Windows []*window.Window
 	Seats   []*seat.Seat
 	Outputs []*output.Output
+
+	Bsp *bsp.Node
 
 	DefaultOutput     *output.Output
 	DefaultLayerShell *output.Output

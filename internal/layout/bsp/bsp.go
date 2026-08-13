@@ -10,8 +10,6 @@ type Node struct {
 
 	Left  *Node
 	Right *Node
-
-	Vertical bool
 }
 
 func New(win *window.Window, root *Node) *Node {
@@ -23,7 +21,6 @@ func New(win *window.Window, root *Node) *Node {
 		return node
 	}
 
-	node.Vertical = !root.Vertical
 	old := *root
 
 	*root = Node{
@@ -36,6 +33,45 @@ func New(win *window.Window, root *Node) *Node {
 	return node
 }
 
+// Find returns the node containing win, or nil if it isn't in the tree.
+func (n *Node) Find(win *window.Window) *Node {
+	if n == nil {
+		return nil
+	}
+
+	if n.Window == win {
+		return n
+	}
+
+	if found := n.Left.Find(win); found != nil {
+		return found
+	}
+
+	return n.Right.Find(win)
+}
+
+func (n *Node) Remove(win *window.Window) bool {
+	if n.Window == win {
+		return true
+	}
+
+	if n.Left == nil || n.Right == nil {
+		return false
+	}
+
+	if n.Left.Remove(win) {
+		*n = *n.Right
+		return false
+	}
+
+	if n.Right.Remove(win) {
+		*n = *n.Left
+		return false
+	}
+
+	return false
+}
+
 func (n *Node) Align(x, y, width, height int32) {
 	if n.Window == nil {
 		if n.Left == nil || n.Right == nil {
@@ -43,7 +79,7 @@ func (n *Node) Align(x, y, width, height int32) {
 			return
 		}
 
-		if n.Vertical {
+		if width < height {
 			n.Left.Align(x, y, width, height/2)
 			n.Right.Align(x, y+height/2, width, height/2)
 		} else {
