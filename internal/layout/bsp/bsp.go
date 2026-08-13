@@ -36,6 +36,7 @@ func (t *Tree) Add(w *window.Window) error {
 	w.SplitTarget = nil
 
 	newNode(w, target)
+	w.HintTiled(0b1111)
 	return nil
 }
 
@@ -48,6 +49,7 @@ func (t *Tree) Remove(w *window.Window) error {
 		t.Root = nil
 	}
 
+	w.HintTiled(0b0000)
 	return nil
 }
 

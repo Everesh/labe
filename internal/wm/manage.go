@@ -44,6 +44,10 @@ func (wm *WindowManager) HandleRiverWindowManagerV1ManageStart(ctx context.Conte
 		s.Manage()
 	}
 
+	for _, w := range wm.Windows {
+		w.FlushHints()
+	}
+
 	for _, o := range wm.Outputs {
 		o.Manage()
 	}

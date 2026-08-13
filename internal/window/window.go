@@ -15,8 +15,6 @@ type Window struct {
 	WM     WindowManager
 	Output Output
 
-	// leaf to split when this window is inserted into the BSP tree,
-	// captured as whatever was focused right before this window took focus
 	SplitTarget *Window
 
 	X, Y                int32
@@ -29,11 +27,13 @@ type Window struct {
 	PointerResizeRequestedEdges uint32
 
 	DecorationHint uint32
+	TiledHint      uint32
 
 	New              bool
 	PendingPosition  bool
 	Closed           bool
 	DecorationHinted bool
+	TiledHinted      bool
 
 	debounceTimer *time.Timer
 }
@@ -41,6 +41,11 @@ type Window struct {
 func (w *Window) SetPosition(x, y int32) {
 	w.Node.SetPosition(x, y)
 	w.X, w.Y = x, y
+}
+
+func (w *Window) HintTiled(sides uint32) {
+	w.TiledHint = sides
+	w.TiledHinted = true
 }
 
 func (w *Window) Manage() {
@@ -54,6 +59,18 @@ func (w *Window) Manage() {
 		}
 	}
 
+	if w.PointerMoveRequested != nil {
+		w.PointerMoveRequested.PointerMove(w)
+		w.PointerMoveRequested = nil
+	}
+
+	if w.PointerResizeRequested != nil {
+		w.PointerResizeRequested.PointerResize(w, w.PointerResizeRequestedEdges)
+		w.PointerResizeRequested = nil
+	}
+}
+
+func (w *Window) FlushHints() {
 	if w.DecorationHinted {
 		log.Debug("adjusting decorations", "window", w.Object)
 		w.DecorationHinted = false
@@ -71,14 +88,9 @@ func (w *Window) Manage() {
 		}
 	}
 
-	if w.PointerMoveRequested != nil {
-		w.PointerMoveRequested.PointerMove(w)
-		w.PointerMoveRequested = nil
-	}
-
-	if w.PointerResizeRequested != nil {
-		w.PointerResizeRequested.PointerResize(w, w.PointerResizeRequestedEdges)
-		w.PointerResizeRequested = nil
+	if w.TiledHinted {
+		w.TiledHinted = false
+		w.Object.SetTiled(w.TiledHint)
 	}
 }
 
