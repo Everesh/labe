@@ -1,2 +1,4 @@
 air_tmp
 assets
+internal/config/config.go
+.gitignore

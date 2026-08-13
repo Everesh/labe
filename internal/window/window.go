@@ -44,7 +44,7 @@ func (w *Window) Manage() {
 		log.Debug("managing new window", "window", w.Object)
 		w.New = false
 		w.UpdateOutput()
-		w.ProposeDimensions(true)
+		w.ProposeDimensions(0, 0, true)
 	}
 
 	if w.DecorationHinted {
@@ -109,18 +109,21 @@ func (w *Window) UpdateOutput() {
 	}
 }
 
-func (w *Window) ProposeDimensions(fill bool) {
-	log.Debug("new dimensions proposed", "window", w.Object)
+func (w *Window) ProposeDimensions(width, height int32, fill bool) {
+	log.Debug("new dimensions proposed", "window", w.Object, "width", width, "height", height, "fill", fill)
+
+	if width != 0 {
+		w.Width = width
+	}
+
+	if height != 0 {
+		w.Height = height
+	}
 
 	oWidth := w.Output.GetWidth()
 	oHeight := w.Output.GetHeight()
 	oX := w.Output.GetX()
 	oY := w.Output.GetY()
-
-	// maximize on top overflow
-	if w.Y < oY {
-		fill = true
-	}
 
 	if w.Output != nil {
 		if oWidth < w.Width || fill {

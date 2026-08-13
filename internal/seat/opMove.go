@@ -18,7 +18,7 @@ func (s *OpMove) InformStart(w *window.Window) {}
 
 func (s *OpMove) InformEnd(w *window.Window) {
 	w.UpdateOutput()
-	w.ProposeDimensions(false)
+	w.ProposeDimensions(0, 0, false)
 }
 
 func NewOpMove(w *window.Window) *OpMove {
